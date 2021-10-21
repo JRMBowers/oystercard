@@ -23,49 +23,52 @@ describe Oystercard do
     end
   end
 
-  describe '#in_journey?' do
-    it 'is initially not in a journey' do
-      expect(subject).not_to be_in_journey
-    end
-  end
   
   describe '#touch_in' do
-    it "can touch in" do
-      subject.top_up(2)
-      subject.touch_in(station)
-      expect(subject).to be_in_journey
-    end
 
     it "raise error when insufficient balance" do
       expect { subject.touch_in(station) }.to raise_error "insufficient balance"
     end 
 
     it 'returns station when touch in' do 
-      subject.top_up(2)
-      subject.touch_in(station)
-      expect(subject.station_touch_in).to eq station
+      journey_double = double("double add_station_in", add_station_in: station)
+      oystercard = Oystercard.new(journey_double)
+      oystercard.top_up(2)
+      expect(oystercard.touch_in(station)).to eq station
+    end 
+
+    it 'fare is given for double touch in' do 
+      journey_double = double("add_touch_in", add_station_in: "fare")
+      oystercard = Oystercard.new(journey_double) 
+      oystercard.top_up(10)
+      expect { oystercard.touch_in(station) }.to change{ oystercard.balance }.by -5
     end 
   end
 
   describe '#touch_out' do
-  let(:journey_double) {double("Journey double", :add_station_in => station, :add_station_out => exit_station)}
+  let(:journey_double) {double("Journey double", add_station_in: station, add_station_out: journey1)}
 
     before(:each) do 
       subject.top_up(10)
       subject.touch_in(station)
     end 
+
     it "can touch out" do
-      subject.touch_out(exit_station)
-      expect(subject).not_to be_in_journey
+      oystercard = Oystercard.new(journey_double)
+      oystercard.top_up(10)
+      oystercard.touch_in(station)
+      expect(oystercard.touch_out(exit_station)).to eq journey1
     end
 
     it 'expect touch_out to reduce balance' do
       expect { subject.touch_out(exit_station) }.to change{ subject.balance }.by(-Oystercard::MINIMUM_BALANCE)
     end
 
-    it 'touch out returns touch in station to nil' do
-      subject.touch_out(exit_station)
-      expect(subject.station_touch_in).to eq nil
+    it 'fare is given for double touch out' do 
+      journey_double = double("add_touch_out", add_station_out: "fare")
+      oystercard = Oystercard.new(journey_double) 
+      oystercard.top_up(10)
+      expect { oystercard.touch_out(station) }.to change{ oystercard.balance }.by -6
     end 
 
   end

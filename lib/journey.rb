@@ -11,30 +11,27 @@ def initialize
 end 
 
 def add_station_in(station)
+  return fare if @station_in != nil 
   @station_in = station
 end 
 
 def add_station_out(station)
+  return fare if @station_in == nil 
   @station_out = station
   finished_journey
 end
 
 def finished_journey
   @journey_history << {@station_in => @station_out}
-  reset
 end 
-  
-#private
 
 def reset
   @station_out = nil
   @station_in = nil
 end 
 
-def finish
-end 
-
 def fare
+  "fare"
 end 
 
 def complete?
