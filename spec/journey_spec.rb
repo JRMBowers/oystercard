@@ -20,6 +20,7 @@ describe Journey do
   it 'expect touch out to store journey' do 
     expect {subject.add_station_out(station_out)}.to change{subject.journey_history}.to [station_in=>station_out]
   end 
+
 end 
 
 end 

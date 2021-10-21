@@ -11,6 +11,7 @@ def initialize
 end 
 
 def add_station_in(station)
+  reset if complete? == true
   return fare if @station_in != nil 
   @station_in = station
 end 
@@ -18,6 +19,7 @@ end
 def add_station_out(station)
   return fare if @station_in == nil 
   @station_out = station
+  complete?
   finished_journey
 end
 
