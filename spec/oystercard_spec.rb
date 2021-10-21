@@ -1,9 +1,10 @@
 require 'oystercard'
+require 'journey'
 
 describe Oystercard do
   let(:station){ double :station }
   let(:exit_station){ double :exit_station }
-  let(:journey){ {station => exit_station} }
+  let(:journey1){ {station => exit_station} }
 
   it 'has a balance' do
     expect(subject.balance).to eq(0)
@@ -47,6 +48,8 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
+  let(:journey_double) {double("Journey double", :add_station_in => station, :add_station_out => exit_station)}
+
     before(:each) do 
       subject.top_up(10)
       subject.touch_in(station)
@@ -65,18 +68,6 @@ describe Oystercard do
       expect(subject.station_touch_in).to eq nil
     end 
 
-    it 'expect touch out to store station' do 
-      subject.touch_out(exit_station)
-      expect(subject.journey_history).to include journey
-    end 
   end
-
-  describe '#store_station' do 
-
-    it 'checks journey history starts out empty' do 
-      expect(subject.journey_history).to eq []
-    end 
-
-  end 
 
 end
